@@ -69,6 +69,7 @@ t.formatar_palavra(t.lista1, "tamanquinh", "tamanco")
 t.formatar_palavra(t.lista3, 'devagarinh', 'devagar')
 t.formatar_palavra(t.lista7, 'grandã', 'grand')
 t.formatar_palavra(t.lista5, 'amarelinh', 'amarel')
+t.formatar_palavra(t.lista2, 'bichinh', 'bich')
 
 
 
