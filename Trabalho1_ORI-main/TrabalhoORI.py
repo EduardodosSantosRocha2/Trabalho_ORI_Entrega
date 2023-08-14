@@ -38,14 +38,14 @@ stop_words.append('troc');
 stop_words.append('lá');
 stop_words.append('pra');
 stop_words.append('tudo');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
-stop_words.append('');
+stop_words.append('entre');
+stop_words.append('dos');
+stop_words.append('ainda');
+stop_words.append('então');
+stop_words.append('pouco');
+stop_words.append('então');
+stop_words.append('cada');#determinante indefinido
+stop_words.append('quanto'); #advérbio
 
 cont = 0;
 
@@ -124,9 +124,10 @@ def IndiceIv(lists_of_words):
     for word in sorted_words:
         lists = inverted_index[word]
         print(f"\n{word}/ {word_count[word]}->", end=" ")
-        contador = Counter(lists)
+        contador = Counter(lists) #cria um dicionário onde as chaves são os elementos
+        # únicos na lista e os valores são as contagens de quantas vezes esses elementos aparecem na lista
         for item, cont in contador.items():
-            print(f"Doc{item+1} / {cont}'", end=" ")
+            print(f"Doc{item+1} / {cont}", end=" ")
             palavraPDF = (word + "/" + str(word_count[word]) + "-> Doc " + str(item+1) + " / " + str(cont))
             listapalavraPDF.append(palavraPDF)
     print("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-..................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n"+cor_reset)
