@@ -23,7 +23,7 @@ cor_reset = '\033[0m';
 estilo_negrito = '\033[1m';
 reset = '\033[0m';
 cor_ciano = '\033[36m';
-PdfNome = "PalavrasStermizadas.pdf";
+PdfNome = "IndiceInv.pdf";
 
 
 stop_words = stopwords.words('portuguese'); #Lista de StopWord
@@ -106,36 +106,33 @@ def Stemizar(lista): #estemiza as palavras
     return lista_stemizada; #retorna a lista stemizada
 
 
-
 def IndiceIv(lists_of_words):
-
-    print(cor_ciano+f"\n-+-+-+-+-+-+-+-+-+-+-+-+-+-"+estilo_negrito+"Discionario:"+reset+""+cor_ciano+"-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+    print(cor_ciano + f"\n-+-+-+-+-+-+-+-+-+-+-+-+-+-" + estilo_negrito + "Discionario:" + reset + "" + cor_ciano + "-+-+-+-+-+-+-+-+-+-+-+-+-+-\n")
 
     # Criar um dicionário para armazenar a contagem de ocorrências das palavras
-    word_count = defaultdict(int);
-    # Preencher a contagem de ocorrências
-    for word_list in lists_of_words:
-        for word in word_list:
-            word_count[word] += 1;
-
-    # Criar um dicionário para armazenar as listas em que cada palavra aparece
-    inverted_index = defaultdict(list)
+    word_count = defaultdict(int)
+    # Preencher a contagem de ocorrências e também a contagem de documentos em que cada palavra ocorre
+    word_document_count = defaultdict(int)
     for list_index, word_list in enumerate(lists_of_words):
-        for word in word_list:
-            inverted_index[word].append(list_index);
+        for word in set(word_list):  # Usamos set para contar apenas uma vez por documento
+            word_count[word] += 1
+            word_document_count[word] += 1
 
-    # Mostrar a quantidade de vezes que cada palavra aparece e em quais listas
-    sorted_words = sorted(word_count.keys()); #coloca o dicionario em ordem alfabetica de acordo com as chaves, que são as palavras.
+    # Mostrar a quantidade de vezes que cada palavra aparece e em quantos documentos
+    sorted_words = sorted(word_count.keys())  # coloca o dicionário em ordem alfabética de acordo com as chaves, que são as palavras.
     for word in sorted_words:
-        lists = inverted_index[word];
-        print(f"\n{word}/ {word_count[word]}->", end=" ");
-        contador = Counter(lists) #cria um dicionário onde as chaves são os elementos
-        # únicos na lista e os valores são as contagens de quantas vezes esses elementos aparecem na lista
-        for item, cont in contador.items():
-            print(f"Doc{item+1} / {cont}", end=" ");
-            palavraPDF = (word + "/" + str(word_count[word]) + "-> Doc " + str(item+1) + " / " + str(cont));
-            listapalavraPDF.append(palavraPDF);
-    print("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-..................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n"+cor_reset)
+        doc_count = word_document_count[word]
+        print(f"\n{word}/{doc_count}->", end="")
+        for list_index, word_list in enumerate(lists_of_words):
+            if word in word_list:
+                word_occurrences = word_list.count(word)
+                print(f"Doc{list_index + 1}/{word_occurrences}", end=" ")
+                palavraPDF = (word + "/" + str(doc_count) + "-> Doc " + str(list_index + 1) + " / " + str(word_occurrences));
+                listapalavraPDF.append(palavraPDF);
+
+
+    print("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-..................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n" + cor_reset)
+
 
 def formatar_palavra(lista, palavraAntiga, palavraNova): # Atualiza com a palavraNova a lista.
     for i, palavra in enumerate(lista):
@@ -156,7 +153,7 @@ def PrintDicionario(Dicionario, AntesDicionario): #exibe o antes de depois do di
 def printarStermizado(lista_nova,lista_antiga, tipo):
     lista_antiga = sorted(lista_antiga) #coloca a lista em ordem alfabetica
     lista_nova = sorted(lista_nova) #coloca a lista em ordem alfabetica
-    print(f""+cor_verde+"-+-+-+-+-+-+-+-+-+-+-+-+-+-"+estilo_negrito+f"+Palavras depois de Stemizar as listas {tipo}:+"+reset+""+cor_verde+"-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+    print(f""+cor_verde+"-+-+-+-+-+-+-+-+-+-+-+-+-+-"+estilo_negrito+f"+Palavras depois de Stemizar a lista {tipo}:+"+reset+""+cor_verde+"-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
     for palavra_antiga, palavra_nova in zip(lista_antiga, lista_nova):
         print(reset+""+ palavra_antiga + " ------> "+cor_ciano+""+ palavra_nova+""+reset);
     print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");

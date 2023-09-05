@@ -30,6 +30,9 @@ t.lista4 = t.removerStopWords(t.lista4,4);
 t.lista5 = t.removerStopWords(t.lista5,5);
 t.lista6 = t.removerStopWords(t.lista6,6);
 t.lista7 = t.removerStopWords(t.lista7,7);
+
+
+
 # guarda em lista auxiliares as palavras antes de serem estemizadas
 t.antesdeStemizar1  = t.lista1;
 t.antesdeStemizar2  = t.lista2;
@@ -38,6 +41,8 @@ t.antesdeStemizar4  = t.lista4;
 t.antesdeStemizar5  = t.lista5;
 t.antesdeStemizar6  = t.lista6;
 t.antesdeStemizar7  = t.lista7;
+
+
 
 
 t.antesDicionario = t.lista1+ t.lista2 + t.lista3+ t.lista4 + t.lista5+t.lista6 + t.lista7 #dicionario recebe as palavras antes de ser  estemizadas, juntando todas as listas
@@ -76,6 +81,8 @@ t.printarStermizado(t.lista7,t.antesdeStemizar7,7);
 
 
 t.removeRepetidos(t.dicionario,t.antesDicionario); #Remove as palavras repetidas do dicionario
+
+print(t.dicionario)
 
 t.PrintDicionario(t.dicionario, t.antesDicionario); #Exibe o dicionario com a palavra não estematizada para estematizada
 
