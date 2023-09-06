@@ -65,6 +65,7 @@ t.formatar_palavra(t.lista3, 'devagarinh', 'devagar');
 t.formatar_palavra(t.lista7, 'grandã', 'grand');
 t.formatar_palavra(t.lista5, 'amarelinh', 'amarel');
 t.formatar_palavra(t.lista2, 'bichinh', 'bich');
+t.formatar_palavra(t.lista3, 'menininh','menin')
 
 
 t.dicionario = t.lista1+ t.lista2 + t.lista3+ t.lista4 + t.lista5+  t.lista6 + t.lista7 # dicionario recebe as palavras stemizadas, juntando todas as listas
@@ -91,7 +92,9 @@ t.IndiceIv(t.listamae);#Gera Indice Invertido
 t.criar_pdf_com_lista_de_texto(t.listapalavraPDF); #gera PDF com indice Invertido
 
 
+t.idf = t.lerPDFIndice(0)
 
+print(t.idf)
 
 
 

@@ -11,9 +11,9 @@ from nltk.stem import SnowballStemmer as snS
 from collections import defaultdict, Counter
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+import math
 locale.setlocale(locale.LC_COLLATE, 'pt_BR.UTF-8') #UTF-8
-
+import re
 
 #Cores para estilo de apresentação
 cor_vermelha = '\033[91m';
@@ -61,9 +61,11 @@ pdfs = ['A_Canção_dos_tamanquinhos_Cecília_Meireles.pdf','A_Centopeia_Mari
 lista1 = []; lista2 = []; lista3 = []; lista4 = []; lista5 = []; lista6 = []; lista7 = []; listamae=[]; listamaePrint=[];
 antesdeStemizar1 = []; antesdeStemizar2=[]; antesdeStemizar3=[]; antesdeStemizar4=[];antesdeStemizar5=[];antesdeStemizar6=[]
 antesdeStemizar7=[]; dicionario = [] ; antesDicionario = [];
-
-
 listapalavraPDF = [];  # Parte gerar PDF
+
+idf = {};
+
+padrao = r'Doc\d+ / \d+'
 
 
 
@@ -119,17 +121,20 @@ def IndiceIv(lists_of_words):
             word_document_count[word] += 1
 
     # Mostrar a quantidade de vezes que cada palavra aparece e em quantos documentos
-    sorted_words = sorted(word_count.keys())  # coloca o dicionário em ordem alfabética de acordo com as chaves, que são as palavras.
+    sorted_words = sorted(word_count.keys())
+
     for word in sorted_words:
         doc_count = word_document_count[word]
         print(f"\n{word}/{doc_count}->", end="")
+        word_info = f"{word} / {doc_count} -> "
+
         for list_index, word_list in enumerate(lists_of_words):
             if word in word_list:
                 word_occurrences = word_list.count(word)
                 print(f"Doc{list_index + 1}/{word_occurrences}", end=" ")
-                palavraPDF = (word + "/" + str(doc_count) + "-> Doc " + str(list_index + 1) + " / " + str(word_occurrences));
-                listapalavraPDF.append(palavraPDF);
+                word_info += f"Doc{list_index + 1} / {word_occurrences} "
 
+        listapalavraPDF.append(word_info)
 
     print("\n-+-+-+-+-+-+-+-+-+-+-+-+-+-..................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n" + cor_reset)
 
@@ -196,3 +201,49 @@ def criar_pdf_com_lista_de_texto(lista_de_texto):
 
     c.save();
 
+
+def lerPDFIndice(pos):
+    pdf = open('IndiceInv.pdf', 'rb')
+    reader = PyPDF2.PdfReader(pdf)
+
+    # Dicionário para armazenar as palavras e seus valores
+    idf = {}
+    wtf = {}
+
+    # Variável para armazenar os resultados encontrados
+    resultados = []
+
+    # Iterar por todas as páginas
+    for pagina in reader.pages:
+        texto = pagina.extract_text()
+
+        # Divida o texto da página em linhas
+        linhas = texto.split('\n')
+
+        # Iterar pelas linhas e faça o que desejar com cada linha
+        for linha in linhas:
+            # Verifique se a linha contém pelo menos três palavras
+            palavras = linha.split()
+            if len(palavras) >= 3:
+                palavra = palavras[0]
+                valor_palavra = palavras[2]
+                valor_palavra = int(valor_palavra)
+                idf[palavra] = math.log((7 / valor_palavra), 10)
+
+            resultados = re.findall(padrao, linha)
+            for resultado in resultados:
+                partes = resultado.split(" / ")  # Divide a correspondência em partes usando " / "
+                doc = partes[0]  # A primeira parte é o "Doc"
+                valor = [partes[0], math.log(int(partes[1]), 10) +1]  # A segunda parte é o valor após " / "
+
+
+                # Use a palavra encontrada como chave no dicionário e armazene o valor como uma lista
+                if palavra in wtf:
+                    wtf[palavra].append(valor)
+                else:
+                    wtf[palavra] = [valor]
+
+    pdf.close()
+    print(wtf)
+    # Agora, idf é um dicionário onde a chave é a palavra e o valor é o valor_palavra
+    return idf
