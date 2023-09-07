@@ -14,6 +14,7 @@ from reportlab.pdfgen import canvas
 import math
 locale.setlocale(locale.LC_COLLATE, 'pt_BR.UTF-8') #UTF-8
 import re
+import pandas as pd
 
 #Cores para estilo de apresentação
 cor_vermelha = '\033[91m';
@@ -64,7 +65,9 @@ antesdeStemizar7=[]; dicionario = [] ; antesDicionario = [];
 listapalavraPDF = [];  # Parte gerar PDF
 
 idf = {};
-
+wtf = {};
+idfVSwtf = {};
+palavrasUser =[];
 padrao = r'Doc\d+ / \d+'
 
 
@@ -207,8 +210,7 @@ def lerPDFIndice(pos):
     reader = PyPDF2.PdfReader(pdf)
 
     # Dicionário para armazenar as palavras e seus valores
-    idf = {}
-    wtf = {}
+
 
     # Variável para armazenar os resultados encontrados
     resultados = []
@@ -244,6 +246,67 @@ def lerPDFIndice(pos):
                     wtf[palavra] = [valor]
 
     pdf.close()
-    print(wtf)
     # Agora, idf é um dicionário onde a chave é a palavra e o valor é o valor_palavra
     return idf
+
+def geradordeidfVSwtf():
+    for palavra, valor_idf in idf.items():
+        if palavra in wtf:
+            idfVSwtf[palavra] = []
+            for doc, valor_wtf in wtf[palavra]:
+                idfVSwtf[palavra].append([doc, valor_idf * valor_wtf])
+
+    print(idfVSwtf)
+
+
+def escolhaPalavra():
+    i = 0
+    continuar = True
+    palavrasUser = []  # Inicialize a lista palavrasUser
+    while continuar:
+        palavra = input(f"Digite a {i+1}ª palavra (ou digite 'sair' para encerrar): ")
+        if palavra.lower() == 'sair':
+            continuar = False
+        else:
+            palavrasUser.append(palavra)
+        i += 1
+
+    # Inicialize os vetores auxiliares com zeros
+    doz1 = [0] * len(palavrasUser)
+    doz2 = [0] * len(palavrasUser)
+    doz3 = [0] * len(palavrasUser)
+    doz4 = [0] * len(palavrasUser)
+    doz5 = [0] * len(palavrasUser)
+    doz6 = [0] * len(palavrasUser)
+    doz7 = [0] * len(palavrasUser)
+
+    for palavra in palavrasUser:
+        if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf
+            for doc, valor in idfVSwtf[palavra]:
+                if doc == 'Doc1':
+                    doz1[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc2':
+                    doz2[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc3':
+                    doz3[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc4':
+                    doz4[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc5':
+                    doz5[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc6':
+                    doz6[palavrasUser.index(palavra)] = valor
+                elif doc == 'Doc7':
+                    doz7[palavrasUser.index(palavra)] = valor
+
+    matriz = pd.DataFrame({
+        "doc1": doz1,
+        "doc2": doz2,
+        "doc3": doz3,
+        "doc4": doz4,
+        "doc5": doz5,
+        "doc6": doz6,
+        "doc7": doz7
+    }, index=palavrasUser)
+
+    print("Matriz:")
+    print(matriz)

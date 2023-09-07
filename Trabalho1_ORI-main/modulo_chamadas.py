@@ -94,7 +94,16 @@ t.criar_pdf_com_lista_de_texto(t.listapalavraPDF); #gera PDF com indice Invertid
 
 t.idf = t.lerPDFIndice(0)
 
+
 print(t.idf)
+
+print(t.wtf)
+
+
+t.geradordeidfVSwtf()
+
+t.escolhaPalavra()
+
 
 
 
