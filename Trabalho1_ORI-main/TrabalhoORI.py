@@ -279,24 +279,35 @@ def escolhaPalavra():
     doz5 = [0] * len(palavrasUser)
     doz6 = [0] * len(palavrasUser)
     doz7 = [0] * len(palavrasUser)
+    Vcons = [0] * len(palavrasUser)
+
 
     for palavra in palavrasUser:
         if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf
             for doc, valor in idfVSwtf[palavra]:
                 if doc == 'Doc1':
                     doz1[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc2':
                     doz2[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc3':
                     doz3[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc4':
                     doz4[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc5':
                     doz5[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc6':
                     doz6[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
                 elif doc == 'Doc7':
                     doz7[palavrasUser.index(palavra)] = valor
+                    Vcons[palavrasUser.index(palavra)] = idf[palavra]
+
+    print(idf['abert'])
 
     matriz = pd.DataFrame({
         "doc1": doz1,
@@ -305,7 +316,9 @@ def escolhaPalavra():
         "doc4": doz4,
         "doc5": doz5,
         "doc6": doz6,
-        "doc7": doz7
+        "doc7": doz7,
+        "Vcons": Vcons
+
     }, index=palavrasUser)
 
     print("Matriz:")
