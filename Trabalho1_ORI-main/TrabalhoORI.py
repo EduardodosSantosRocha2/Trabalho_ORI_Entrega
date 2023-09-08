@@ -15,6 +15,7 @@ import math
 locale.setlocale(locale.LC_COLLATE, 'pt_BR.UTF-8') #UTF-8
 import re
 import pandas as pd
+import numpy as np
 
 #Cores para estilo de apresentação
 cor_vermelha = '\033[91m';
@@ -67,8 +68,10 @@ listapalavraPDF = [];  # Parte gerar PDF
 idf = {};
 wtf = {};
 idfVSwtf = {};
+ProdutoInterno = {}
 palavrasUser =[];
 padrao = r'Doc\d+ / \d+'
+
 
 
 
@@ -307,7 +310,6 @@ def escolhaPalavra():
                     doz7[palavrasUser.index(palavra)] = valor
                     Vcons[palavrasUser.index(palavra)] = idf[palavra]
 
-    print(idf['abert'])
 
     matriz = pd.DataFrame({
         "doc1": doz1,
@@ -321,5 +323,41 @@ def escolhaPalavra():
 
     }, index=palavrasUser)
 
-    print("Matriz:")
+    print("Matriz: ")
     print(matriz)
+
+    for coluna in matriz.columns:
+        print(f"Coluna '{coluna}':")
+        valores_quadrados = matriz[coluna] ** 2
+        soma_quadrados = valores_quadrados.sum()
+
+        # Verifique se a soma dos quadrados não é zero antes de calcular a raiz quadrada
+        if soma_quadrados != 0:
+            raiz_soma_quadrados = np.sqrt(soma_quadrados)
+            matriz[coluna] = matriz[coluna] / raiz_soma_quadrados
+            print("Valores ao quadrado:", valores_quadrados.tolist())
+            print("Soma dos quadrados:", soma_quadrados)
+            print("Raiz da soma dos quadrados:", raiz_soma_quadrados)
+        else:
+            print("Todos os valores na coluna são zero, evitando divisão por zero.")
+
+    print("Calculado a raiz da soma: ")
+    print(matriz)
+
+    print("Normatizazado: ")
+    for coluna in matriz.columns:
+        matriz[coluna] = matriz[coluna] * matriz['Vcons']
+    print(matriz)
+
+    for coluna in matriz.columns.tolist():
+        if coluna != 'Vcons':
+            ProdutoInterno[coluna] = matriz[coluna].sum();
+
+    print("\nProduto Interno: ")
+    print(ProdutoInterno)
+
+    ProdutoInterno_ordenado = dict(sorted(ProdutoInterno.items(), key=lambda item: item[1], reverse=True))
+    i = 0;
+    for chave,valor in ProdutoInterno_ordenado.items():
+        i +=1
+        print(f"O documento {chave} está na {i} posição com o valor {valor}\n");
