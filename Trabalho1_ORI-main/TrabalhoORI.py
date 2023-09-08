@@ -266,6 +266,7 @@ def escolhaPalavra():
     i = 0
     continuar = True
     palavrasUser = []  # Inicialize a lista palavrasUser
+
     while continuar:
         palavra = input(f"Digite a {i+1}ª palavra (ou digite 'sair' para encerrar): ")
         if palavra.lower() == 'sair':
@@ -273,6 +274,22 @@ def escolhaPalavra():
         else:
             palavrasUser.append(palavra)
         i += 1
+
+    palavrasUser = [palavra if len(palavra) <= 3 else stemmer.stem(palavra) for palavra in  palavrasUser]
+
+    palavrasUser = removerStopWords(palavrasUser, 777);
+
+    formatar_palavra(palavrasUser, 'água','agua');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
+    formatar_palavra(palavrasUser, "tamanq", "tamanco");
+    formatar_palavra(palavrasUser, "tamanquinh", "tamanco");
+    formatar_palavra(palavrasUser, 'devagarinh', 'devagar');
+    formatar_palavra(palavrasUser, 'grandã', 'grand');
+    formatar_palavra(palavrasUser, 'amarelinh', 'amarel');
+    formatar_palavra(palavrasUser, 'bichinh', 'bich');
+    formatar_palavra(palavrasUser, 'menininh', 'menin')
+
+
+
 
     # Inicialize os vetores auxiliares com zeros
     doz1 = [0] * len(palavrasUser)

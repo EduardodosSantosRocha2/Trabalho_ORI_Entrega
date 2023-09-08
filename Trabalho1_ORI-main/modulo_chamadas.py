@@ -107,4 +107,3 @@ t.escolhaPalavra()
 
 
 
-
