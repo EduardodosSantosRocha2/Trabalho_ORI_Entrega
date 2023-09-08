@@ -356,7 +356,7 @@ def escolhaPalavra():
     print("\nProduto Interno: ")
     print(ProdutoInterno)
 
-    ProdutoInterno_ordenado = dict(sorted(ProdutoInterno.items(), key=lambda item: item[1], reverse=True))
+    ProdutoInterno_ordenado = dict(sorted(ProdutoInterno.items(), key=lambda item: item[1], reverse=True)) #Valores do dicionario do maior para o menor
     i = 0;
     for chave,valor in ProdutoInterno_ordenado.items():
         i +=1
