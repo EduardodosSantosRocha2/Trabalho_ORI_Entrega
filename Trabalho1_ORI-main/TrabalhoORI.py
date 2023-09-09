@@ -16,6 +16,7 @@ locale.setlocale(locale.LC_COLLATE, 'pt_BR.UTF-8') #UTF-8
 import re
 import pandas as pd
 import numpy as np
+import pyfiglet
 
 #Cores para estilo de apresentação
 cor_vermelha = '\033[91m';
@@ -259,6 +260,7 @@ def geradordeidfVSwtf():
             for doc, valor_wtf in wtf[palavra]:
                 idfVSwtf[palavra].append([doc, valor_idf * valor_wtf])
 
+    print("idfVSwtf: ", end= "")
     print(idfVSwtf)
 
 
@@ -275,18 +277,18 @@ def escolhaPalavra():
             palavrasUser.append(palavra)
         i += 1
 
-    palavrasUser = [palavra if len(palavra) <= 3 else stemmer.stem(palavra) for palavra in  palavrasUser]
+    palavrasUser = [palavra if len(palavra) <= 3 else stemmer.stem(palavra) for palavra in  palavrasUser] #stematiza a palavra que o usuario entrou
 
-    palavrasUser = removerStopWords(palavrasUser, 777);
+    palavrasUser = removerStopWords(palavrasUser, 777); #remove as stopwords da lista de palavras digitadas pelo usuario
 
     formatar_palavra(palavrasUser, 'água','agua');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
-    formatar_palavra(palavrasUser, "tamanq", "tamanco");
-    formatar_palavra(palavrasUser, "tamanquinh", "tamanco");
-    formatar_palavra(palavrasUser, 'devagarinh', 'devagar');
-    formatar_palavra(palavrasUser, 'grandã', 'grand');
-    formatar_palavra(palavrasUser, 'amarelinh', 'amarel');
-    formatar_palavra(palavrasUser, 'bichinh', 'bich');
-    formatar_palavra(palavrasUser, 'menininh', 'menin')
+    formatar_palavra(palavrasUser, "tamanq", "tamanco"); #Atualiza as palavras
+    formatar_palavra(palavrasUser, "tamanquinh", "tamanco");#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'devagarinh', 'devagar');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'grandã', 'grand');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'amarelinh', 'amarel');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'bichinh', 'bich');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'menininh', 'menin') #Atualiza as palavras
 
 
 
@@ -303,7 +305,7 @@ def escolhaPalavra():
 
 
     for palavra in palavrasUser:
-        if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf
+        if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf e adiciona na lista auxiliar para gerar a matriz
             for doc, valor in idfVSwtf[palavra]:
                 if doc == 'Doc1':
                     doz1[palavrasUser.index(palavra)] = valor
@@ -328,6 +330,7 @@ def escolhaPalavra():
                     Vcons[palavrasUser.index(palavra)] = idf[palavra]
 
 
+    #Gera a matriz
     matriz = pd.DataFrame({
         "doc1": doz1,
         "doc2": doz2,
@@ -340,41 +343,62 @@ def escolhaPalavra():
 
     }, index=palavrasUser)
 
-    print("Matriz: ")
+
+    header = pyfiglet.figlet_format("Matriz")
+    print(header)
     print(matriz)
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+
+    header = pyfiglet.figlet_format("Raiz da soma dos quadrados")
+    print(header)
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
 
     for coluna in matriz.columns:
         print(f"Coluna '{coluna}':")
+        print(f"Valores: {matriz[coluna].tolist()}")
         valores_quadrados = matriz[coluna] ** 2
         soma_quadrados = valores_quadrados.sum()
 
-        # Verifique se a soma dos quadrados não é zero antes de calcular a raiz quadrada
+        # Verifique se a soma dos quadrados não é zero antes de calcular a raiz quadrada e atualiza a matriz divindo pela raiz da soma dos quadrados
         if soma_quadrados != 0:
             raiz_soma_quadrados = np.sqrt(soma_quadrados)
             matriz[coluna] = matriz[coluna] / raiz_soma_quadrados
             print("Valores ao quadrado:", valores_quadrados.tolist())
             print("Soma dos quadrados:", soma_quadrados)
             print("Raiz da soma dos quadrados:", raiz_soma_quadrados)
+            print("\n\n")
         else:
             print("Todos os valores na coluna são zero, evitando divisão por zero.")
+            print("\n\n")
 
-    print("Calculado a raiz da soma: ")
+
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+    header = pyfiglet.figlet_format("Calculado a raiz da soma")
+    print(header)
     print(matriz)
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
 
-    print("Normatizazado: ")
-    for coluna in matriz.columns:
-        matriz[coluna] = matriz[coluna] * matriz['Vcons']
-    print(matriz)
 
-    for coluna in matriz.columns.tolist():
+    header = pyfiglet.figlet_format("Normatizado")
+    print(header)
+
+    for coluna in matriz.columns: #normatiza
         if coluna != 'Vcons':
+            matriz[coluna] = matriz[coluna] * matriz['Vcons']
+    print(matriz)
+
+
+    for coluna in matriz.columns.tolist(): #obtem uma lista das culunas
+        if coluna != 'Vcons':              #Soma as colunas, mas não o vetor consulta
             ProdutoInterno[coluna] = matriz[coluna].sum();
 
-    print("\nProduto Interno: ")
-    print(ProdutoInterno)
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+    header = pyfiglet.figlet_format("Produto Interno")
+    print(header)
+
 
     ProdutoInterno_ordenado = dict(sorted(ProdutoInterno.items(), key=lambda item: item[1], reverse=True)) #Valores do dicionario do maior para o menor
     i = 0;
     for chave,valor in ProdutoInterno_ordenado.items():
         i +=1
-        print(f"O documento {chave} está na {i} posição com o valor {valor}\n");
+        print(f"O documento {chave} está na {i} posição com o valor {valor}\n"); #printa o dicionario com o produto interno do maior para o menor
