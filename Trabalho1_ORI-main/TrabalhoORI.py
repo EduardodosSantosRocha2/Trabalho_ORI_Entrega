@@ -281,7 +281,7 @@ def escolhaPalavra():
 
     palavrasUser = removerStopWords(palavrasUser, 777); #remove as stopwords da lista de palavras digitadas pelo usuario
 
-    formatar_palavra(palavrasUser, 'água','agua');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
+    formatar_palavra(palavrasUser, 'águ','agu');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
     formatar_palavra(palavrasUser, "tamanq", "tamanco"); #Atualiza as palavras
     formatar_palavra(palavrasUser, "tamanquinh", "tamanco");#Atualiza as palavras
     formatar_palavra(palavrasUser, 'devagarinh', 'devagar');#Atualiza as palavras
