@@ -27,6 +27,7 @@ t.formatar_palavra(t.lista6, 'água', 'agua');#Atualiza as palavras água, pois 
 t.ld_values = [len(t.lista1), len(t.lista2), len(t.lista3), len(t.lista4), len(t.lista5), len(t.lista6),len(t.lista7)]
 t.lave = (len(t.lista1) + len(t.lista2) + len(t.lista3) + len(t.lista4) + len(t.lista5) + len(t.lista6) + len(t.lista7)) / 7
 
+print("LD values: ", t.ld_values)
 
 
 
@@ -124,17 +125,19 @@ while (escolhaMetodo):
 
 
     elif modelo == 2:
-        t.idf = t.lerPDFIndice(0)
+        t.lerPDFIndiceBM25(0)
 
         print("idf: ", end="")
         print(t.idf)
 
-        print("wtf: ", end="")
-        print(t.wtf)
+        print("Valores doc: ", end="")
+        print(t.valoresAndDOC)
 
-        t.geradordeidfVSwtf()
+        t.geradordeRSvd();
 
         t.BM25Palavra()
+
+
 
     elif modelo == 0:
         escolhaMetodo = False;

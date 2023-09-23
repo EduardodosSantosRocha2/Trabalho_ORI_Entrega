@@ -73,9 +73,17 @@ ProdutoInterno = {}
 palavrasUser =[];
 padrao = r'Doc\d+ / \d+'
 
+#BM25 - Okapi
 ld_values = []; #tamanho do doc
 lave = 0;
-
+K1 = 2;
+b = 0.75
+KX = K1+1;
+KY = 0; #sera atualizado esse valor
+valoresAndDOC = {};
+Rsvd = {};
+RSVdocSoma = {};
+#
 
 def lerPDF(lista, pos): #leitura do PDF
     pdf = open(pdfs[pos], 'rb');
@@ -236,12 +244,12 @@ def lerPDFIndice(pos):
                 valor_palavra = int(valor_palavra)
                 idf[palavra] = math.log((7 / valor_palavra), 10)
 
+
             resultados = re.findall(padrao, linha)
             for resultado in resultados:
                 partes = resultado.split(" / ")  # Divide a correspondência em partes usando " / "
                 doc = partes[0]  # A primeira parte é o "Doc"
                 valor = [partes[0], math.log(int(partes[1]), 10) +1]  # A segunda parte é o valor após " / "
-
 
                 # Use a palavra encontrada como chave no dicionário e armazene o valor como uma lista
                 if palavra in wtf:
@@ -271,6 +279,7 @@ def escolhaPalavra():
 
     while continuar:
         palavra = input(f"Digite a {i+1}ª palavra (ou digite 'sair' para encerrar): ")
+        palavra = palavra.strip();
         if palavra.lower() == 'sair':
             continuar = False
         else:
@@ -407,6 +416,106 @@ def escolhaPalavra():
 
 
 
+def lerPDFIndiceBM25(pos):
+    pdf = open('IndiceInv.pdf', 'rb')
+    reader = PyPDF2.PdfReader(pdf)
+
+    # Dicionário para armazenar as palavras e seus valores
+
+
+    # Variável para armazenar os resultados encontrados
+    resultados = []
+
+    # Iterar por todas as páginas
+    for pagina in reader.pages:
+        texto = pagina.extract_text()
+
+        # Divida o texto da página em linhas
+        linhas = texto.split('\n')
+
+        # Iterar pelas linhas e faça o que desejar com cada linha
+        for linha in linhas:
+            # Verifique se a linha contém pelo menos três palavras
+            palavras = linha.split()
+            if len(palavras) >= 3:
+                palavra = palavras[0]
+                valor_palavra = palavras[2]
+                valor_palavra = int(valor_palavra)
+                idf[palavra] = math.log((7 / valor_palavra), 10)
+
+
+            resultados = re.findall(padrao, linha)
+            for resultado in resultados:
+                partes = resultado.split(" / ")  # Divide a correspondência em partes usando " / "
+                doc = partes[0]  # A primeira parte é o "Doc"
+                valor = [partes[0], int(partes[1])]  # A segunda parte é o valor após " / "
+
+
+                # Use a palavra encontrada como chave no dicionário e armazene o valor como uma lista
+                if palavra in valoresAndDOC:
+                    valoresAndDOC[palavra].append(valor)
+                else:
+                    valoresAndDOC[palavra] = [valor]
+
+    pdf.close()
+    # Agora, idf é um dicionário onde a chave é a palavra e o valor é o valor_palavra
+
+
+
+
+
+
+
+def geradordeRSvd():
+    for i, (palavra, valor_idf) in enumerate(idf.items()):
+
+        if palavra in valoresAndDOC:
+            Rsvd[palavra] = []
+            for doc, valor_AndDOC in valoresAndDOC[palavra]:
+
+                if doc =="Doc1":
+                    KY = K1 * ((1 - b) + b * (ld_values[0] / lave))
+                elif doc =="Doc2":
+                    KY = K1 * ((1 - b) + b * (ld_values[1] / lave))
+                elif doc == "Doc3":
+                    KY = K1 * ((1 - b) + b * (ld_values[2] / lave))
+                elif doc == "Doc4":
+                    KY = K1 * ((1 - b) + b * (ld_values[3] / lave))
+                elif doc == "Doc5":
+                    KY = K1 * ((1 - b) + b * (ld_values[4] / lave))
+                elif doc == "Doc6":
+                    KY = K1 * ((1 - b) + b * (ld_values[5] / lave))
+                elif doc == "Doc7":
+                    KY = K1 * ((1 - b) + b * (ld_values[6] / lave))
+
+
+                conta = valor_idf * ((KX * valor_AndDOC) / (KY + valor_AndDOC))
+                Rsvd[palavra].append([doc, conta])
+
+    #print("idf: ", idf)
+    #print("ld_values: ", ld_values)
+    #print("K1: ", K1)
+    #print("b: ", b)
+    #print("lave: ", lave)
+    #print("KX: ", KX)
+
+    #print("valoresAndDOC: ", valoresAndDOC)
+    #print("Rsvd: ", Rsvd)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def BM25Palavra():
     i = 0
     continuar = True
@@ -414,6 +523,7 @@ def BM25Palavra():
 
     while continuar:
         palavra = input(f"Digite a {i+1}ª palavra (ou digite 'sair' para encerrar): ")
+        palavra = palavra.strip();
         if palavra.lower() == 'sair':
             continuar = False
         else:
@@ -449,8 +559,8 @@ def BM25Palavra():
 
 
     for palavra in palavrasUser:
-        if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf e adiciona na lista auxiliar para gerar a matriz
-            for doc, valor in idfVSwtf[palavra]:
+        if palavra in Rsvd:  # Verifique se a palavra está em idfVSwtf e adiciona na lista auxiliar para gerar a matriz
+            for doc, valor in Rsvd[palavra]:
                 if doc == 'Doc1':
                     doz1[palavrasUser.index(palavra)] = valor
 
@@ -488,8 +598,23 @@ def BM25Palavra():
     }, index=palavrasUser)
 
 
-    matriz.loc['LD'] = ld_values
+    print("-+-+-+-+-+-+-+-+-+-+-+-+-+-.............................................-+-+-+-+-+-+-+-+-+-+-+-+-+-\n");
+    header = pyfiglet.figlet_format("Matriz das palavras no modelo BM25")
+    print(header)
 
-    print(matriz)
-    print(f"Valor lave: {lave}");
+
+    print(f"\n{matriz}\n\n")
+    print(f"LD: {ld_values}\n\n")
+    print(f"Valor lave: {lave} \n\n");
+
+
+    for coluna in matriz.columns.tolist(): #obtem uma lista das culunas #Soma as colunas
+        RSVdocSoma[coluna] = matriz[coluna].sum();
+
+    RSVdoc_ordenado = dict(sorted(RSVdocSoma.items(), key=lambda item: item[1],reverse=True))  # Valores do dicionario do maior para o menor
+    i = 0;
+    for chave, valor in RSVdoc_ordenado.items():
+        i += 1
+        print(
+            f"O documento {chave} está na {i} posição com o valor {valor}\n");  # printa o dicionario com do maior para o menor
 
