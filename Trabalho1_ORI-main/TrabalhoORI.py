@@ -73,8 +73,8 @@ ProdutoInterno = {}
 palavrasUser =[];
 padrao = r'Doc\d+ / \d+'
 
-
-
+ld_values = []; #tamanho do doc
+lave = 0;
 
 
 def lerPDF(lista, pos): #leitura do PDF
@@ -402,3 +402,92 @@ def escolhaPalavra():
     for chave,valor in ProdutoInterno_ordenado.items():
         i +=1
         print(f"O documento {chave} está na {i} posição com o valor {valor}\n"); #printa o dicionario com o produto interno do maior para o menor
+
+
+
+
+def BM25Palavra():
+    i = 0
+    continuar = True
+    palavrasUser = []  # Inicialize a lista palavrasUser
+
+    while continuar:
+        palavra = input(f"Digite a {i+1}ª palavra (ou digite 'sair' para encerrar): ")
+        if palavra.lower() == 'sair':
+            continuar = False
+        else:
+            palavrasUser.append(palavra)
+        i += 1
+
+    palavrasUser = [palavra if len(palavra) <= 3 else stemmer.stem(palavra) for palavra in  palavrasUser] #stematiza a palavra que o usuario entrou
+
+    palavrasUser = removerStopWords(palavrasUser, 777); #remove as stopwords da lista de palavras digitadas pelo usuario
+
+    formatar_palavra(palavrasUser, 'água','agua');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
+    formatar_palavra(palavrasUser, "tamanq", "tamanco"); #Atualiza as palavras
+    formatar_palavra(palavrasUser, "tamanquinh", "tamanco");#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'devagarinh', 'devagar');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'grandã', 'grand');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'amarelinh', 'amarel');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'bichinh', 'bich');#Atualiza as palavras
+    formatar_palavra(palavrasUser, 'menininh', 'menin') #Atualiza as palavras
+
+
+
+
+    # Inicialize os vetores auxiliares com zeros
+    doz1 = [0] * len(palavrasUser)
+    doz2 = [0] * len(palavrasUser)
+    doz3 = [0] * len(palavrasUser)
+    doz4 = [0] * len(palavrasUser)
+    doz5 = [0] * len(palavrasUser)
+    doz6 = [0] * len(palavrasUser)
+    doz7 = [0] * len(palavrasUser)
+
+
+
+
+    for palavra in palavrasUser:
+        if palavra in idfVSwtf:  # Verifique se a palavra está em idfVSwtf e adiciona na lista auxiliar para gerar a matriz
+            for doc, valor in idfVSwtf[palavra]:
+                if doc == 'Doc1':
+                    doz1[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc2':
+                    doz2[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc3':
+                    doz3[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc4':
+                    doz4[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc5':
+                    doz5[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc6':
+                    doz6[palavrasUser.index(palavra)] = valor
+
+                elif doc == 'Doc7':
+                    doz7[palavrasUser.index(palavra)] = valor
+
+
+
+
+
+    #Gera a matriz
+    matriz = pd.DataFrame({
+        "doc1": doz1,
+        "doc2": doz2,
+        "doc3": doz3,
+        "doc4": doz4,
+        "doc5": doz5,
+        "doc6": doz6,
+        "doc7": doz7,
+    }, index=palavrasUser)
+
+
+    matriz.loc['LD'] = ld_values
+
+    print(matriz)
+    print(f"Valor lave: {lave}");
