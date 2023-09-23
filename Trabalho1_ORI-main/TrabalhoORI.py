@@ -281,7 +281,7 @@ def escolhaPalavra():
 
     palavrasUser = removerStopWords(palavrasUser, 777); #remove as stopwords da lista de palavras digitadas pelo usuario
 
-    formatar_palavra(palavrasUser, 'água','agua');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
+    formatar_palavra(palavrasUser, 'águ','agu');  # Atualiza as palavras água, pois com acentuação a ordem alafabetica não funciona corretamente
     formatar_palavra(palavrasUser, "tamanq", "tamanco"); #Atualiza as palavras
     formatar_palavra(palavrasUser, "tamanquinh", "tamanco");#Atualiza as palavras
     formatar_palavra(palavrasUser, 'devagarinh', 'devagar');#Atualiza as palavras
@@ -402,6 +402,7 @@ def escolhaPalavra():
     for chave,valor in ProdutoInterno_ordenado.items():
         i +=1
         print(f"O documento {chave} está na {i} posição com o valor {valor}\n"); #printa o dicionario com o produto interno do maior para o menor
+<<<<<<< HEAD
 
 
 
@@ -491,3 +492,5 @@ def BM25Palavra():
 
     print(matriz)
     print(f"Valor lave: {lave}");
+=======
+>>>>>>> 0dcadb904fb1b9a522e28f71e646cf47d5117d29
